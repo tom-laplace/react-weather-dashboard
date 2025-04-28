@@ -10,10 +10,38 @@ export function WeaterDashboard() {
   const [city, setCity] = useState<WeatherInfoApi>();
   const [unit, setUnit] = useState<string>("°C");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setIsError] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
   const [recentSearchList, setRecentSearchList] = useState<WeatherInfoApi[]>(
     []
   );
+
+  if (navigator.geolocation && !inputCity) {
+    navigator.geolocation.getCurrentPosition(geolocationSuccess);
+  }
+
+  async function geolocationSuccess(position: GeolocationPosition) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    const payload = await getCityWeather(latitude.toString + longitude.toString());
+
+    if (payload.error) {
+      setIsError(true);
+    }
+
+    setCity(payload.payload);
+    setIsLoading(false);
+  }
+
+  const addCityToSearchList = (city: WeatherInfoApi) => {
+    const cityExists = recentSearchList.some(
+      (existingCity) => existingCity.location.name === city.location.name
+    );
+
+    if (!cityExists) {
+      setRecentSearchList([...recentSearchList, city]);
+    }
+  };
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -21,11 +49,11 @@ export function WeaterDashboard() {
     const payload = await getCityWeather(inputCity);
 
     if (payload.error) {
-      setIsError(false);
+      setIsError(true);
     }
 
     setCity(payload.payload);
-    setRecentSearchList([...recentSearchList, payload.payload]);
+    addCityToSearchList(payload.payload);
     setIsLoading(false);
   };
 
@@ -33,7 +61,7 @@ export function WeaterDashboard() {
     return <div>En cours...</div>;
   }
 
-  if (error) {
+  if (isError) {
     return <div>Erreur pendant la recherche</div>;
   }
 
