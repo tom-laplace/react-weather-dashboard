@@ -1,9 +1,9 @@
-import { WeatherInfoApi } from "@/types/WeatherInfoApi.type";
+import { APICurrentWeatherSchema } from "@/services/weather.api.types";
 
 export default function WeatherSearchList({
   citiesRecentlySearchedList,
 }: {
-  citiesRecentlySearchedList: WeatherInfoApi[];
+  citiesRecentlySearchedList: APICurrentWeatherSchema[];
 }) {
   const citiesListItems = citiesRecentlySearchedList.map((city) => {
     return <li key={city.location.name}>{city.location.name}</li>;

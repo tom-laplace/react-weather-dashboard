@@ -1,7 +1,9 @@
+import { SkeletonCard } from "@/components/skeleton-card";
 import WeatherCard from "@/components/weather-card";
 import WeatherForm from "@/components/weather-form";
 import WeatherSearchList from "@/components/weather-search-list";
 import { useCurrentWeatherQuery } from "@/hooks/use-current-weather-query";
+import useGeolocation from "@/hooks/use-geolocation";
 import { APICurrentWeatherSchema } from "@/services/weather.api.types";
 import { useEffect, useState } from "react";
 
@@ -13,25 +15,21 @@ export function AppWeather() {
   >([]);
   const [query, setQuery] = useState<string>("");
 
+  const { latitude, longitude, geolocationError } = useGeolocation();
   const { current_weather, isError, isLoading } = useCurrentWeatherQuery({
     q: query,
   });
 
   useEffect(() => {
-    if (navigator.geolocation && !inputCity) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          setQuery(`${latitude},${longitude}`);
-        },
-        (error) => {
-          console.error("Error while trying to use geolocation : ", error);
-          setQuery("Paris");
-        },
-      );
+    if (!inputCity) {
+      setQuery(`${latitude},${longitude}`);
     }
-  }, []);
+
+    if (geolocationError) {
+      console.error("Geolocation error : ", geolocationError);
+      setInputCity("Paris");
+    }
+  }, [latitude, longitude, geolocationError]);
 
   useEffect(() => {
     if (current_weather) {
@@ -49,31 +47,24 @@ export function AppWeather() {
     }
   }, [current_weather]);
 
-  const handleSearch = () => {
-    if (inputCity.trim()) {
-      setQuery(inputCity);
-    }
-  };
-
   if (isLoading) {
-    return <div className="p-4 text-center">Chargement des données météo</div>;
+    return <SkeletonCard></SkeletonCard>;
   }
 
   if (isError) {
     <div className="p-4 text-center text-red-500">
-      Erreur pendant le chargement des données. Merci d'essayer une autre
-      location.
+      Error while loading data. Please try an other location.
     </div>;
   }
 
   return (
     <>
-      <div className="flex-row">
+      <div className="flex-row mx-auto w-screen">
         <div>
           <WeatherForm
             inputCity={inputCity}
             setInputCity={setInputCity}
-            handleSearch={handleSearch}
+            setQuery={setQuery}
             unit={unit}
             setUnit={setUnit}
           ></WeatherForm>
@@ -84,12 +75,12 @@ export function AppWeather() {
           </div>
         ) : (
           <div className="p-4 text-center">
-            Aucune donnée météo. Merci d'essayer une autre localisation.
+            No weather data. Please try an other location.
           </div>
         )}
       </div>
       <div className="mt-6 text-center">
-        <h2 className="font-semibold">Recherches récentes :</h2>
+        <h2 className="font-semibold">Recently searched :</h2>
         <WeatherSearchList
           citiesRecentlySearchedList={recentSearchList}
         ></WeatherSearchList>

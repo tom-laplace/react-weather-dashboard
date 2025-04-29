@@ -1,30 +1,34 @@
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCcw } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function WeatherForm({
   inputCity,
-  setInputCity,
-  handleSearch,
   unit,
+  setInputCity,
+  setQuery,
   setUnit,
 }: {
   inputCity: string;
-  setInputCity: React.Dispatch<React.SetStateAction<string>>;
-  handleSearch: () => void;
   unit: string;
+  setInputCity: React.Dispatch<React.SetStateAction<string>>;
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
   setUnit: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const handleInputChange = (e: any) => {
     setInputCity(e.target.value);
+  };
+
+  const handleSearch = () => {
+    if (inputCity.trim()) {
+      setQuery(inputCity);
+    }
   };
 
   return (
@@ -32,7 +36,7 @@ export default function WeatherForm({
       <div className="m-2 flex">
         <Input
           type="text"
-          placeholder="Ville"
+          placeholder="City"
           value={inputCity}
           onChange={handleInputChange}
         />
@@ -41,13 +45,13 @@ export default function WeatherForm({
           type="submit"
           className="hover:cursor-pointer"
         >
-          Chercher
+          Search
         </Button>
       </div>
       <div className="m-2">
         <Select defaultValue={unit} onValueChange={setUnit}>
           <SelectTrigger>
-            <SelectValue placeholder="Unité" />
+            <SelectValue placeholder="Unit" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="°C">°C</SelectItem>

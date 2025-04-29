@@ -11,6 +11,7 @@ export function useCurrentWeatherQuery({ q }: { q: string }) {
     retry: 1,
     queryKey: ["current-weather", q],
     enabled: q.length > 0,
+    refetchInterval: 60,
   });
 
   return {

@@ -9,7 +9,7 @@ interface GeolocationOptions {
 interface Coordinates {
   latitude: number | null;
   longitude: number | null;
-  error: GeolocationPositionError | null;
+  geolocationError: GeolocationPositionError | null;
 }
 
 type GeolocationCallback = (coordinates: Coordinates) => void;
@@ -22,7 +22,7 @@ const useGeolocation = (
   const [coordinates, setCoordinates] = useState<Coordinates>({
     latitude: null,
     longitude: null,
-    error: null,
+    geolocationError: null,
   });
 
   const updateCoordinates = useCallback(
@@ -32,7 +32,7 @@ const useGeolocation = (
       const newCoordinates: Coordinates = {
         latitude,
         longitude,
-        error: null,
+        geolocationError: null,
       };
 
       setCoordinates(newCoordinates);
@@ -48,7 +48,7 @@ const useGeolocation = (
     setCoordinates({
       latitude: null,
       longitude: null,
-      error,
+      geolocationError: error,
     });
   }, []);
 

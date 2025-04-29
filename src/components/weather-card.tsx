@@ -2,11 +2,12 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { APICurrentWeatherSchema } from "@/services/weather.api.types";
+import FeelslikeWidget from "./feelslike-widget";
+import UvWidget from "./uv-widget";
 
 export default function WeatherCard({
   city,
@@ -25,35 +26,35 @@ export default function WeatherCard({
 
   return (
     <>
-      <Card className="w-1/2 mx-auto">
+      <Card className="w-1/2 mx-auto text-center">
         <CardHeader>
-          <CardTitle>Météo du jour</CardTitle>
-          <CardDescription>
-            Actuellement dans la ville de {city.location.name},{" "}
-            {city.location.region}, {city.location.country} :
+          <CardTitle className="text-2xl">
+            {city.location.name}, {city.location.country}
+          </CardTitle>
+          <CardDescription className="flex flex-col">
+            <div>
+              <span className="font-bold text-4xl">
+                {unit === "°C" ? city.current?.temp_c : city.current?.temp_f}
+              </span>
+              {unit}
+            </div>
+            <div>{city.current.condition.text}</div>
           </CardDescription>
-          <CardContent>
+          <CardContent className="mx-auto">
             <img
               src={city.current.condition.icon}
               alt={city.current.condition.text}
             />
           </CardContent>
         </CardHeader>
-        <CardContent>
-          Température de{" "}
-          <span className="font-bold">
-            {unit === "°C" ? city.current?.temp_c : city.current?.temp_f}
-          </span>
-          {unit}
+        <CardContent className="flex-row">
+          <FeelslikeWidget
+            feelslike_c={city.current.feelslike_c}
+            feelslike_f={city.current.feelslike_f}
+            unit={unit}
+          ></FeelslikeWidget>
+          <UvWidget uv={city.current.uv}></UvWidget>
         </CardContent>
-        <CardFooter>
-          <div>
-            <span className="font-bold mx-2">
-              Humidité : {city?.current.humidity}%
-            </span>
-            <span className="font-bold mx-2">UV : {city?.current.uv}</span>
-          </div>
-        </CardFooter>
       </Card>
     </>
   );
