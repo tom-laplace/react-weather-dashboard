@@ -16,7 +16,7 @@ export default function FeelslikeWidget({
 }) {
   return (
     <>
-      <Card className="w-1/4">
+      <Card className="w-full">
         <CardHeader className=" text-left">
           <CardTitle>Feelslike</CardTitle>
           <CardDescription>

@@ -1,7 +1,7 @@
+import CitiesList from "@/components/cities-list";
 import { SkeletonCard } from "@/components/skeleton-card";
 import WeatherCard from "@/components/weather-card";
 import WeatherForm from "@/components/weather-form";
-import WeatherSearchList from "@/components/weather-search-list";
 import { useCurrentWeatherQuery } from "@/hooks/use-current-weather-query";
 import useGeolocation from "@/hooks/use-geolocation";
 import { APICurrentWeatherSchema } from "@/services/weather.api.types";
@@ -80,10 +80,10 @@ export function AppWeather() {
         )}
       </div>
       <div className="mt-6 text-center">
-        <h2 className="font-semibold">Recently searched :</h2>
-        <WeatherSearchList
-          citiesRecentlySearchedList={recentSearchList}
-        ></WeatherSearchList>
+        <CitiesList
+          citiesList={recentSearchList}
+          listType="Recents"
+        ></CitiesList>
       </div>
     </>
   );

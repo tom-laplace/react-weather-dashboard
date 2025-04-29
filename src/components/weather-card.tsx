@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/card";
 import { APICurrentWeatherSchema } from "@/services/weather.api.types";
 import FeelslikeWidget from "./feelslike-widget";
+import HumidityWidget from "./humidity-widget";
+import PrecipitationWidget from "./precipitation-widget";
 import UvWidget from "./uv-widget";
 
 export default function WeatherCard({
@@ -47,13 +49,17 @@ export default function WeatherCard({
             />
           </CardContent>
         </CardHeader>
-        <CardContent className="flex-row">
+        <CardContent className="flex flex-row justify-around space-x-4">
           <FeelslikeWidget
             feelslike_c={city.current.feelslike_c}
             feelslike_f={city.current.feelslike_f}
             unit={unit}
           ></FeelslikeWidget>
           <UvWidget uv={city.current.uv}></UvWidget>
+          <PrecipitationWidget
+            precip_mm={city.current.precip_mm}
+          ></PrecipitationWidget>
+          <HumidityWidget humidity={city.current.humidity}></HumidityWidget>
         </CardContent>
       </Card>
     </>

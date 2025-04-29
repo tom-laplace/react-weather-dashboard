@@ -5,15 +5,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function UvWidget({ uv }: { uv: number }) {
+export default function HumidityWidget({ humidity }: { humidity: number }) {
   return (
     <>
       <Card className="w-full">
         <CardHeader className=" text-left">
-          <CardTitle>UV Index</CardTitle>
+          <CardTitle>Humidity</CardTitle>
           <CardDescription>
             <div>
-              <span className="font-bold text-4xl">{uv}</span>
+              <span className="font-bold text-4xl">{humidity}%</span>
             </div>
           </CardDescription>
         </CardHeader>
