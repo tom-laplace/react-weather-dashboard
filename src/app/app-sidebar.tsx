@@ -1,3 +1,4 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +15,9 @@ export function AppSidebar() {
         <SidebarGroup />
         <SidebarGroup />
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <ModeToggle></ModeToggle>
+      </SidebarFooter>
     </Sidebar>
   );
 }

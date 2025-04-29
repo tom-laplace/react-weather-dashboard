@@ -55,14 +55,6 @@ export default function WeatherForm({
           </SelectContent>
         </Select>
       </div>
-      <div className="m-2">
-        <Button onClick={handleSearch} className="hover:cursor-pointer">
-          <RefreshCcw />{" "}
-        </Button>
-      </div>
-      <div className="m-2">
-        <ModeToggle></ModeToggle>
-      </div>
     </div>
   );
 }
