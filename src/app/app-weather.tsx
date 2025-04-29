@@ -1,11 +1,11 @@
 import WeatherCard from "@/components/weather-card";
+import WeatherForm from "@/components/weather-form";
+import WeatherSearchList from "@/components/weather-search-list";
 import { useCurrentWeatherQuery } from "@/hooks/use-current-weather-query";
 import { APICurrentWeatherSchema } from "@/services/weather.api.types";
 import { useEffect, useState } from "react";
-import WeatherForm from "./weather-form";
-import WeatherSearchList from "./weather-search-list";
 
-export function WeatherDashboard() {
+export function AppWeather() {
   const [inputCity, setInputCity] = useState("");
   const [unit, setUnit] = useState<string>("°C");
   const [recentSearchList, setRecentSearchList] = useState<

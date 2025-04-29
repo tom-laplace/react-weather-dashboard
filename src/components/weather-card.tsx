@@ -32,6 +32,12 @@ export default function WeatherCard({
             Actuellement dans la ville de {city.location.name},{" "}
             {city.location.region}, {city.location.country} :
           </CardDescription>
+          <CardContent>
+            <img
+              src={city.current.condition.icon}
+              alt={city.current.condition.text}
+            />
+          </CardContent>
         </CardHeader>
         <CardContent>
           Température de{" "}

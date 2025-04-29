@@ -1,17 +1,14 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { ThemeProvider } from "./components/theme-provider";
-import { Toaster } from "./components/ui/sonner";
-import { WeatherDashboard } from "./components/weather-dashboard";
-
-const queryClient = new QueryClient();
+import { AppWeather } from "@/app/app-weather";
+import Layout from "@/components/layout";
+import { ThemeProvider } from "@/components/theme-provider";
+import { queryClient } from "@/services/weather.api";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <WeatherDashboard></WeatherDashboard>
-        <Toaster />
+        <Layout children={<AppWeather></AppWeather>} />
       </ThemeProvider>
     </QueryClientProvider>
   );
