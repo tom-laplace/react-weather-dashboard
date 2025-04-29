@@ -21,7 +21,7 @@ export function AppWeather() {
   });
 
   useEffect(() => {
-    if (!inputCity) {
+    if (!inputCity && latitude && longitude) {
       setQuery(`${latitude},${longitude}`);
     }
 
@@ -29,7 +29,7 @@ export function AppWeather() {
       console.error("Geolocation error : ", geolocationError);
       setInputCity("Paris");
     }
-  }, [latitude, longitude, geolocationError]);
+  }, [latitude, longitude, geolocationError, query]);
 
   useEffect(() => {
     if (current_weather) {
