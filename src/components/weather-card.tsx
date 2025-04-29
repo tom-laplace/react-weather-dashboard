@@ -6,21 +6,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import { WeatherInfoApi } from "@/types/WeatherInfoApi.type";
+import { APICurrentWeatherSchema } from "@/services/weather.api.types";
 
 export default function WeatherCard({
   city,
   unit,
 }: {
-  city: WeatherInfoApi | undefined;
+  city: APICurrentWeatherSchema | null;
   unit: string;
 }) {
   if (!city) {
     return <div>Aucune ville trouvée</div>;
   }
 
-  if (!city.location) {
+  if (!city) {
     return <div>Données de localisation indisponibles</div>;
   }
 

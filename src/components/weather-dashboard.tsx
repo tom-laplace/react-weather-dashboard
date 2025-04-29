@@ -1,68 +1,69 @@
-import { useState } from "react";
 import WeatherCard from "@/components/weather-card";
-import { getCityWeather } from "@/data/weather.api";
-import { WeatherInfoApi } from "@/types/WeatherInfoApi.type";
+import { useCurrentWeatherQuery } from "@/hooks/use-current-weather-query";
+import { APICurrentWeatherSchema } from "@/services/weather.api.types";
+import { useEffect, useState } from "react";
 import WeatherForm from "./weather-form";
 import WeatherSearchList from "./weather-search-list";
 
-export function WeaterDashboard() {
+export function WeatherDashboard() {
   const [inputCity, setInputCity] = useState("");
-  const [city, setCity] = useState<WeatherInfoApi>();
   const [unit, setUnit] = useState<string>("°C");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [recentSearchList, setRecentSearchList] = useState<WeatherInfoApi[]>(
-    []
-  );
+  const [recentSearchList, setRecentSearchList] = useState<
+    APICurrentWeatherSchema[]
+  >([]);
+  const [query, setQuery] = useState<string>("");
 
-  if (navigator.geolocation && !inputCity) {
-    navigator.geolocation.getCurrentPosition(geolocationSuccess);
-  }
+  const { current_weather, isError, isLoading } = useCurrentWeatherQuery({
+    q: query,
+  });
 
-  async function geolocationSuccess(position: GeolocationPosition) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    const payload = await getCityWeather(latitude.toString + longitude.toString());
-
-    if (payload.error) {
-      setIsError(true);
+  useEffect(() => {
+    if (navigator.geolocation && !inputCity) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          setQuery(`${latitude},${longitude}`);
+        },
+        (error) => {
+          console.error("Error while trying to use geolocation : ", error);
+          setQuery("Paris");
+        },
+      );
     }
+  }, []);
 
-    setCity(payload.payload);
-    setIsLoading(false);
-  }
+  useEffect(() => {
+    if (current_weather) {
+      setRecentSearchList((prev) => {
+        const exists = prev.some(
+          (item) =>
+            item.location.name === current_weather.location.name &&
+            item.location.country === current_weather.location.country,
+        );
 
-  const addCityToSearchList = (city: WeatherInfoApi) => {
-    const cityExists = recentSearchList.some(
-      (existingCity) => existingCity.location.name === city.location.name
-    );
+        if (exists) return prev;
 
-    if (!cityExists) {
-      setRecentSearchList([...recentSearchList, city]);
+        return [current_weather, ...prev].slice(0, 5);
+      });
     }
-  };
+  }, [current_weather]);
 
-  const handleSearch = async () => {
-    setIsLoading(true);
-
-    const payload = await getCityWeather(inputCity);
-
-    if (payload.error) {
-      setIsError(true);
+  const handleSearch = () => {
+    if (inputCity.trim()) {
+      setQuery(inputCity);
     }
-
-    setCity(payload.payload);
-    addCityToSearchList(payload.payload);
-    setIsLoading(false);
   };
 
   if (isLoading) {
-    return <div>En cours...</div>;
+    return <div className="p-4 text-center">Chargement des données météo</div>;
   }
 
   if (isError) {
-    return <div>Erreur pendant la recherche</div>;
+    <div className="p-4 text-center text-red-500">
+      Erreur pendant le chargement des données. Merci d'essayer une autre
+      location.
+    </div>;
   }
 
   return (
@@ -77,13 +78,22 @@ export function WeaterDashboard() {
             setUnit={setUnit}
           ></WeatherForm>
         </div>
-        <div>
-          <WeatherCard city={city} unit={unit}></WeatherCard>
-        </div>
+        {current_weather ? (
+          <div>
+            <WeatherCard city={current_weather} unit={unit}></WeatherCard>
+          </div>
+        ) : (
+          <div className="p-4 text-center">
+            Aucune donnée météo. Merci d'essayer une autre localisation.
+          </div>
+        )}
       </div>
-      <WeatherSearchList
-        citiesRecentlySearchedList={recentSearchList}
-      ></WeatherSearchList>
+      <div className="mt-6 text-center">
+        <h2 className="font-semibold">Recherches récentes :</h2>
+        <WeatherSearchList
+          citiesRecentlySearchedList={recentSearchList}
+        ></WeatherSearchList>
+      </div>
     </>
   );
 }
