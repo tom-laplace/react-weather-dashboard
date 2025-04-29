@@ -4,14 +4,18 @@ export default function CitiesList({
   citiesList,
   listType,
 }: {
-  citiesList: APICurrentWeatherSchema[];
+  citiesList: APICurrentWeatherSchema[] | undefined;
   listType: "Recents" | "Favorites";
 }) {
-  const citiesListItems = citiesList.map((city) => {
-    return <li key={city.location.name}>{city.location.name}</li>;
+  const citiesListItems = citiesList?.map((city, index) => {
+    return (
+      <li key={`${city.location.name}-${city.location.country}-${index}`}>
+        {city.location.name}
+      </li>
+    );
   });
 
-  if (citiesListItems.length === 0) {
+  if (!citiesListItems) {
     return <span className="m-2">Aucune recherche récente</span>;
   }
 
