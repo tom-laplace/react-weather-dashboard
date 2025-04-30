@@ -4,12 +4,13 @@ import WeatherForm from "@/components/weather-form";
 import { useCurrentWeatherQuery } from "@/hooks/use-current-weather-query";
 import useGeolocation from "@/hooks/use-geolocation";
 import { useRecentSearches } from "@/hooks/use-recent-searches";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function AppWeather() {
   const [inputCity, setInputCity] = useState("");
   const [unit, setUnit] = useState<string>("°C");
   const [query, setQuery] = useState<string>("");
+  const prevWeatherId = useRef("");
 
   const { addRecentSearch } = useRecentSearches();
   const { latitude, longitude, geolocationError } = useGeolocation();
@@ -24,29 +25,42 @@ export function AppWeather() {
 
     if (geolocationError) {
       console.error("Geolocation error : ", geolocationError);
-      setInputCity("Paris");
+      if (!inputCity) {
+        setQuery("Paris");
+      }
     }
-  }, [latitude, longitude, geolocationError, query]);
+  }, [latitude, longitude, geolocationError, inputCity]);
 
   useEffect(() => {
-    if (current_weather) {
-      addRecentSearch(current_weather);
+    if (
+      current_weather &&
+      current_weather.location &&
+      current_weather.location.name
+    ) {
+      const weatherId = `${current_weather.location.name}-${current_weather.location.country}`;
+
+      if (weatherId !== prevWeatherId.current) {
+        addRecentSearch(current_weather);
+        prevWeatherId.current = weatherId;
+      }
     }
-  }, [current_weather?.location.name]);
+  }, [current_weather, addRecentSearch]);
 
   if (isLoading) {
-    return <SkeletonCard></SkeletonCard>;
+    return <SkeletonCard />;
   }
 
   if (isError) {
-    <div className="p-4 text-center text-red-500">
-      Error while loading data. Please try an other location.
-    </div>;
+    return (
+      <div className="p-4 text-center text-red-500">
+        Error while loading data. Please try another location.
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="flex-row mx-auto w-screen">
+      <div className="flex-row mx-auto w-full">
         <div>
           <WeatherForm
             inputCity={inputCity}
@@ -54,15 +68,15 @@ export function AppWeather() {
             setQuery={setQuery}
             unit={unit}
             setUnit={setUnit}
-          ></WeatherForm>
+          />
         </div>
         {current_weather ? (
           <div>
-            <WeatherCard city={current_weather} unit={unit}></WeatherCard>
+            <WeatherCard city={current_weather} unit={unit} />
           </div>
         ) : (
           <div className="p-4 text-center">
-            No weather data. Please try an other location.
+            No weather data. Please try another location.
           </div>
         )}
       </div>

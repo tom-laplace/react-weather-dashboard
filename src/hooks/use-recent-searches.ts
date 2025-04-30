@@ -1,32 +1,12 @@
 import { APICurrentWeatherSchema } from "@/services/weather.api.types";
-import { useCallback, useEffect, useState } from "react";
+import { recentSearchesAtom } from "@/store/atoms";
+import { useAtom } from "jotai";
+import { useCallback } from "react";
 
-const STORAGE_KEY = "recent_weather_searches";
 const MAX_RECENT_SEARCHES = 5;
 
-export function useRecentSearches(maxItems = MAX_RECENT_SEARCHES) {
-  const [recentSearches, setRecentSearches] = useState<
-    APICurrentWeatherSchema[]
-  >(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-
-    const storedSearches = localStorage.getItem(STORAGE_KEY);
-    if (storedSearches) {
-      try {
-        return JSON.parse(storedSearches);
-      } catch (error) {
-        console.error("Failed to parse stored searches : ", error);
-        return [];
-      }
-    }
-    return [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(recentSearches));
-  }, [recentSearches]);
+export function useRecentSearches() {
+  const [recentSearches, setRecentSearches] = useAtom(recentSearchesAtom);
 
   const addRecentSearch = useCallback(
     (weather: APICurrentWeatherSchema) => {
@@ -44,21 +24,24 @@ export function useRecentSearches(maxItems = MAX_RECENT_SEARCHES) {
               item.location.country !== weather.location.country,
           );
           return [weather, ...filteredList];
+        } else {
+          return [weather, ...prev.slice(0, MAX_RECENT_SEARCHES - 1)];
         }
-
-        return [weather, ...prev.slice(0, maxItems - 1)];
       });
     },
-    [maxItems],
+    [setRecentSearches],
   );
 
-  const removeRecentSearch = useCallback((index: number) => {
-    setRecentSearches((prev) => {
-      const newList = [...prev];
-      newList.splice(index, 1);
-      return newList;
-    });
-  }, []);
+  const removeRecentSearch = useCallback(
+    (index: number) => {
+      setRecentSearches((prev) => {
+        const newList = [...prev];
+        newList.splice(index, 1);
+        return newList;
+      });
+    },
+    [setRecentSearches],
+  );
 
   return {
     recentSearches,
